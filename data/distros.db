@@ -1,0 +1,37 @@
+# =============================================================================
+# mybash-tools / data/distros.db
+# Список поддерживаемых дистрибутивов: ID из /etc/os-release → профиль
+# Формат: ID:менеджер:обновление:установка:удаление:логи
+# =============================================================================
+
+# ALT-based
+altlinux:apt-get:apt-get update && apt-get upgrade -y:apt-get install -y:apt-get remove -y:/var/log/apt
+alt:apt-get:apt-get update && apt-get upgrade -y:apt-get install -y:apt-get remove -y:/var/log/apt
+basealt:apt-get:apt-get update && apt-get upgrade -y:apt-get install -y:apt-get remove -y:/var/log/apt
+
+# Debian/Ubuntu
+debian:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
+ubuntu:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
+linuxmint:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
+
+# Red Hat family
+fedora:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
+rhel:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
+centos:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
+redos:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
+astra:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
+
+# Arch
+arch:pacman:pacman -Syu:pacman -S:pacman -R:/var/log/pacman.log
+manjaro:pacman:pacman -Syu:pacman -S:pacman -R:/var/log/pacman.log
+
+# SUSE
+opensuse:zypper:zypper update -y:zypper install -y:zypper remove -y:/var/log/zypper.log
+sles:zypper:zypper update -y:zypper install -y:zypper remove -y:/var/log/zypper.log
+
+# Specialized
+proxmox:apt:apt update && apt dist-upgrade -y:apt install -y:apt remove -y:/var/log/apt
+alpine:apk:apk update && apk upgrade:apk add:apk del:/var/log/apk
+
+# Generic
+unknown:unknown:echo '⚠️  Обновление не настроено':echo '⚠️  Установка не настроена':echo '⚠️  Удаление не настроено':/var/log
