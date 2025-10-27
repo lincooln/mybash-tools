@@ -1,37 +1,37 @@
 # =============================================================================
 # mybash-tools / data/distros.db
 # Список поддерживаемых дистрибутивов: ID из /etc/os-release → профиль
-# Формат: ID:менеджер:обновление:установка:удаление:логи
+# Формат: ID:менеджер:обновление:установка:установка_full:удаление:логи
 # =============================================================================
 
 # ALT-based
-altlinux:apt-get:apt-get update && apt-get upgrade -y:apt-get install -y:apt-get remove -y:/var/log/apt
-alt:apt-get:apt-get update && apt-get upgrade -y:apt-get install -y:apt-get remove -y:/var/log/apt
-basealt:apt-get:apt-get update && apt-get upgrade -y:apt-get install -y:apt-get remove -y:/var/log/apt
+altlinux:apt-get:apt-get update && apt-get dist-upgrade -y:apt-get install -y --no-install-recommends:apt-get install -y:apt-get purge -y --autoremove:/var/log/apt
+alt:apt-get:apt-get update && apt-get dist-upgrade -y:apt-get install -y --no-install-recommends:apt-get install -y:apt-get purge -y --autoremove:/var/log/apt
+basealt:apt-get:apt-get update && apt-get dist-upgrade -y:apt-get install -y --no-install-recommends:apt-get install -y:apt-get purge -y --autoremove:/var/log/apt
 
 # Debian/Ubuntu
-debian:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
-ubuntu:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
-linuxmint:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
+debian:apt:apt update && apt upgrade -y:apt install -y --no-install-recommends:apt install -y:apt purge -y --autoremove:/var/log/apt
+ubuntu:apt:apt update && apt upgrade -y:apt install -y --no-install-recommends:apt install -y:apt purge -y --autoremove:/var/log/apt
+linuxmint:apt:apt update && apt upgrade -y:apt install -y --no-install-recommends:apt install -y:apt purge -y --autoremove:/var/log/apt
 
 # Red Hat family
-fedora:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
-rhel:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
-centos:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
-redos:dnf:dnf upgrade -y:dnf install -y:dnf remove -y:/var/log/dnf
-astra:apt:apt update && apt upgrade -y:apt install -y:apt remove -y:/var/log/apt
+fedora:dnf:dnf upgrade -y:dnf install -y --setopt=install_weak_deps=False:dnf install -y:dnf remove -y --autoremove:/var/log/dnf
+rhel:dnf:dnf upgrade -y:dnf install -y --setopt=install_weak_deps=False:dnf install -y:dnf remove -y --autoremove:/var/log/dnf
+centos:dnf:dnf upgrade -y:dnf install -y --setopt=install_weak_deps=False:dnf install -y:dnf remove -y --autoremove:/var/log/dnf
+redos:dnf:dnf upgrade -y:dnf install -y --setopt=install_weak_deps=False:dnf install -y:dnf remove -y --autoremove:/var/log/dnf
+astra:apt:apt update && apt upgrade -y:apt install -y --no-install-recommends:apt install -y:apt purge -y --autoremove:/var/log/apt
 
 # Arch
-arch:pacman:pacman -Syu:pacman -S:pacman -R:/var/log/pacman.log
-manjaro:pacman:pacman -Syu:pacman -S:pacman -R:/var/log/pacman.log
+arch:pacman:pacman -Syu:pacman -S --needed:pacman -S:pacman -Rns --noconfirm:/var/log/pacman.log
+manjaro:pacman:pacman -Syu:pacman -S --needed:pacman -S:pacman -Rns --noconfirm:/var/log/pacman.log
 
 # SUSE
-opensuse:zypper:zypper update -y:zypper install -y:zypper remove -y:/var/log/zypper.log
-sles:zypper:zypper update -y:zypper install -y:zypper remove -y:/var/log/zypper.log
+opensuse:zypper:zypper update -y:zypper install -y --recommends=no:zypper install -y:zypper remove -y --clean-deps:/var/log/zypper.log
+sles:zypper:zypper update -y:zypper install -y --recommends=no:zypper install -y:zypper remove -y --clean-deps:/var/log/zypper.log
 
 # Specialized
-proxmox:apt:apt update && apt dist-upgrade -y:apt install -y:apt remove -y:/var/log/apt
-alpine:apk:apk update && apk upgrade:apk add:apk del:/var/log/apk
+proxmox:apt:apt update && apt dist-upgrade -y:apt install -y --no-install-recommends:apt install -y:apt purge -y --autoremove:/var/log/apt
+alpine:apk:apk update && apk upgrade:apk add:apk add:apk del --purge:/var/log/apk
 
 # Generic
-unknown:unknown:echo '⚠️  Обновление не настроено':echo '⚠️  Установка не настроена':echo '⚠️  Удаление не настроено':/var/log
+unknown:unknown:echo '⚠️  Обновление не настроено':echo '⚠️  Установка не настроена':echo '⚠️  Установка full не настроена':echo '⚠️  Удаление не настроено':/var/log
