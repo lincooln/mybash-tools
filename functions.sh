@@ -1,11 +1,23 @@
 # =============================================================================
 # mybash-tools / functions
-# Версия: 1.2
+# Версия: 1.6
 # Назначение: Полезные пользовательские функции.
 # Авторство: Lincooln с активным участием Qwen3-Max
 # Зависимости: Использует MYBASH_INSTALL_CMD из профиля ОС.
 # Репозиторий: https://github.com/lincooln/mybash-tools
 # =============================================================================
+
+# Внутренняя функция: определение дистрибутива
+_mybash_get_os() {
+    if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        echo "$ID"
+    elif command -v lsb_release >/dev/null 2>&1; then
+        lsb_release -i | awk '{print $3}' | tr '[:upper:]' '[:lower:]'
+    else
+        echo "unknown"
+    fi
+}
 
 # @cmd info — информация о системе
 info() {
@@ -17,8 +29,141 @@ info() {
         echo "OS: $OSTYPE"
     fi
     echo "Kernel: $(uname -sr)"
-    echo "Shell: $SHELL"
+    echo "Shell: $SHELL (версия: ${BASH_VERSION:-неизвестно})"
     echo "User: $USER"
+}
+
+# @cmd hostname — управление именем хоста (просмотр/изменение)
+hostname() {
+    local new_name="$1"
+
+    # Без аргументов — показываем текущее имя
+    if [[ -z "$new_name" ]]; then
+        command hostname
+        return 0
+    fi
+
+    # Проверка корректности имени
+    if [[ ! "$new_name" =~ ^[a-zA-Z][a-zA-Z0-9\-]{0,62}$ ]] || [[ "$new_name" == *- ]]; then
+        echo "❌ Некорректное имя хоста: '$new_name'"
+        echo "   Требования:"
+        echo "   - Должно начинаться с латинской буквы"
+        echo "   - Может содержать буквы, цифры и дефис (-)"
+        echo "   - Длина от 1 до 63 символов"
+        echo "   - Не может заканчиваться дефисом"
+        return 1
+    fi
+
+    # Универсальный метод для всех современных систем
+    if command -v hostnamectl >/dev/null; then
+        echo "$new_name" | sudo tee /etc/hostname >/dev/null
+        sudo hostnamectl set-hostname "$new_name"
+    else
+        # Резерв для очень старых систем
+        echo "$new_name" | sudo tee /etc/hostname >/dev/null
+        sudo hostname "$new_name"
+    fi
+
+    echo "✅ Имя хоста изменено на: $new_name"
+
+    # Обновляем приглашение
+    if command -v _mybash_set_prompt >/dev/null; then
+        _mybash_set_prompt
+        echo "ℹ️  Приглашение обновлено в текущей сессии."
+    fi
+
+    echo "ℹ️  Для полного применения перезагрузите систему или выполните:"
+    echo "   sudo systemctl restart systemd-hostnamed"
+}
+
+# @cmd pkg+ — установить пакет (без рекомендованных зависимостей)
+pkg+() {
+    if [[ $# -eq 0 ]]; then
+        echo "Использование: pkg+ <пакет> [пакет...]"
+        return 1
+    fi
+    eval "$MYBASH_INSTALL_CMD" "$@"
+}
+
+# @cmd pkg++ — установить пакет (с рекомендованными зависимостями)
+pkg++() {
+    if [[ $# -eq 0 ]]; then
+        echo "Использование: pkg++ <пакет> [пакет...]"
+        return 1
+    fi
+    eval "$MYBASH_INSTALL_FULL_CMD" "$@"
+}
+
+# @cmd pkg- — удалить пакет (полностью, с настройками)
+pkg-() {
+    if [[ $# -eq 0 ]]; then
+        echo "Использование: pkg- <пакет> [пакет...]"
+        return 1
+    fi
+    eval "$MYBASH_REMOVE_CMD" "$@"
+}
+
+# @cmd fnd — поиск файлов и директорий по частичному совпадению
+fnd() {
+    local pattern="$1"
+    local search_path="${2:-.}"
+
+    if [[ -z "$pattern" ]]; then
+        echo "Использование: fnd <шаблон> [путь]"
+        echo "Примеры:"
+        echo "  fnd доклад          # ищет 'доклад' в текущей папке"
+        echo "  fnd доклад.jpg      # ищет файлы с расширением .jpg"
+        echo "  fnd log /var        # ищет 'log' в /var"
+        return 0
+    fi
+
+    if [[ ! -d "$search_path" ]]; then
+        echo "❌ Путь не найден: $search_path"
+        return 1
+    fi
+
+    # Проверяем наличие fd
+    if command -v fd >/dev/null 2>&1; then
+        echo "🔍 Использую быстрый поиск (fd)..."
+        local ext=""
+        if [[ "$pattern" == *.* ]]; then
+            ext=".${pattern##*.}"
+            pattern="${pattern%.*}"
+        fi
+
+        if [[ -n "$ext" ]]; then
+            fd -t f -i "$pattern" -e "${ext#.}" "$search_path"
+        else
+            fd -t f -t d -i "$pattern" "$search_path"
+        fi
+    else
+        echo "🔍 fd недоступен. Использую стандартный поиск (find)..."
+        echo "   Совет: установите fd через 'pkg+ fd' для ускорения поиска"
+
+        # Определяем расширение
+        local ext=""
+        if [[ "$pattern" == *.* ]]; then
+            ext=".${pattern##*.}"
+            pattern="${pattern%.*}"
+        fi
+
+        echo "🔍 Ищу '$pattern${ext}' в $search_path..."
+        echo "   (Результаты появляются сразу. Нажмите Ctrl+C для отмены)"
+
+        if [[ -n "$ext" ]]; then
+            # Поиск файлов с расширением
+            find "$search_path" -type f -iname "*${pattern}*${ext}" 2>/dev/null | \
+            while IFS= read -r file; do
+                printf "✅ %s\n" "$file"
+            done
+        else
+            # Поиск файлов и папок по имени
+            find "$search_path" \( -type f -o -type d \) -iname "*${pattern}*" 2>/dev/null | \
+            while IFS= read -r item; do
+                printf "✅ %s\n" "$item"
+            done
+        fi
+    fi
 }
 
 # @cmd extract — универсальная распаковка архивов
@@ -103,19 +248,3 @@ mkcd() {
         return 1
     fi
 }
-
-
-# docker-clean=' \
-#   docker container prune -f ; \
-#   docker image prune -f ; \
-#   docker network prune -f ; \
-#   docker volume prune -f '
-
-# # цвета для вывода man цветным
-# export LESS_TERMCAP_mb=$'\E[01;31m'
-# export LESS_TERMCAP_md=$'\E[01;31m'
-# export LESS_TERMCAP_me=$'\E[0m'
-# export LESS_TERMCAP_se=$'\E[0m'
-# export LESS_TERMCAP_so=$'\E[01;44;33m'
-# export LESS_TERMCAP_ue=$'\E[0m'
-# export LESS_TERMCAP_us=$'\E[01;32m'

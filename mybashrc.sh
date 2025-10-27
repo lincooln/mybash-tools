@@ -1,6 +1,6 @@
 # =============================================================================
 # mybash-tools / mybashrc.sh
-# Версия: 1.4
+# Версия: 1.5
 # Назначение: Главный конфигурационный файл для подключения модулей.
 # Авторство: Lincooln с активным участием Qwen3-Max
 # Зависимости: Подключает модули из указанной директории. Безопасен к отсутствию файлов.
@@ -32,6 +32,7 @@ if [[ -z "${MYBASH_UPDATE_CMD:-}" ]]; then
     MYBASH_PKG_MANAGER="unknown"
     MYBASH_UPDATE_CMD="echo '⚠️  Обновление не настроено. Выполните reinstall mybash-tools.'"
     MYBASH_INSTALL_CMD="echo '⚠️  Установка пакетов не настроена.'"
+    MYBASH_INSTALL_FULL_CMD="echo '⚠️  Установка full не настроена.'"
     MYBASH_REMOVE_CMD="echo '⚠️  Удаление пакетов не настроена.'"
     MYBASH_LOG_DIR="/var/log"
 fi
