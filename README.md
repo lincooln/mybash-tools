@@ -52,8 +52,9 @@ mybash-tools/
 ├── completion.sh                  # Автодополнение (systemctl и др.)
 ├── tools/                         # Автономные утилиты-помощники
 │   ├── install-fonts.sh           # Установка шрифтов (Nerd Fonts, Inter, PT Sans и др.)
-│   ├── smb-share.sh               # Быстрая настройка SMB-шары (Debian 13+)
-│   └── install-syncthingtray.sh   # Установка SyncthingTray на ALT Linux
+│   ├── install-smb-share.sh       # Установка и быстрая настройка SMB-шары (Debian, Ubuntu)
+│   ├── install-syncthing-mint.sh  # Установка Syncthing + Syncthing-Gtk (linux mint, Ubuntu)
+│   └── install-syncthingtray.sh   # Установка SyncthingTray для KDE Plasma (ALT Linux)
 └── data/
     ├── help.txt                   # База знаний для `help`
     ├── TerminessNerdFont-Bold     # Отличный моноширный шрифт с интегрированными иконками
@@ -97,9 +98,14 @@ install-syncthingtray.sh — установка SyncthingTray на ALT Linux и 
 ```bash
 curl -fsSL -o install-syncthingtray.sh https://raw.githubusercontent.com/lincooln/mybash-tools/main/tools/install-syncthingtray.sh && chmod +x install-syncthingtray.sh && sudo ./install-syncthingtray.sh
 ```
-smb-share.sh  - установка samba и расшаривание директории одним скриптом. Все необходимые настройки в начале скрипта можно изменить перед запуском, в том числе и вернуть всё обратно.
+install-syncthing-mint.sh - Установка Syncthing + Syncthing-Gtk (linux mint, Ubuntu) из оффициального репозитория разработчика либо из репозитория дистрибутива. два режима интерактивный (по умолчанию) с подтверждением каждого шага, не интеракивный молча ставит последние версии и добавляет запись в автозагрузку. Режим меняется прямо в скрипте одним ключём.
 ```bash
-curl -fsSL -o smb-share.sh https://raw.githubusercontent.com/lincooln/mybash-tools/main/tools/smb-share.sh && chmod +x smb-share.sh && sudo ./smb-share.sh
+curl -fsSL -o install-syncthing-mint.sh https://raw.githubusercontent.com/lincooln/mybash-tools/main/tools/install-syncthing-mint.sh && chmod +x install-syncthing-mint.sh && sudo ./install-syncthing-mint.sh
+```
+
+install-smb-share.sh  - установка samba и расшаривание директории одним скриптом. Все необходимые настройки в начале скрипта можно изменить перед запуском, в том числе и вернуть всё обратно.
+```bash
+curl -fsSL -o install-smb-share.sh https://raw.githubusercontent.com/lincooln/mybash-tools/main/tools/install-smb-share.sh && chmod +x install-smb-share.sh && sudo ./install-smb-share.sh
 ```
 📚 Базы данных (data/) нужна для хранения данных таким модулям как help и nerdicons без этих данных модули создадут пустую базу.
 help.txt — простой текстовый файл с подсказками вызывается из модуля myhelp
