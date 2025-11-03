@@ -52,6 +52,7 @@ mybash-tools/
 ├── completion.sh                  # Автодополнение (systemctl и др.)
 ├── tools/                         # Автономные утилиты-помощники
 │   ├── install-fonts.sh           # Установка шрифтов (Nerd Fonts, Inter, PT Sans и др.)
+│   ├── smb-share.sh               # Быстрая настройка SMB-шары (Debian 13+)
 │   └── install-syncthingtray.sh   # Установка SyncthingTray на ALT Linux
 └── data/
     ├── help.txt                   # База знаний для `help`
@@ -89,15 +90,15 @@ myhelp - Персональная справка, по сути упрощённ
 Это узкоспециализированные скрипты, каждый скрипт решает ровно одну задачу. Они не подключаются через .bashrc и не относятся к проекту mybash-tool. Просто решил хранить их в этом репозитории для удобства доступа из одного места.
 
 install-fonts.sh — установка моих любимых шрифтов. скачивает, очищает от мусора, устанавливает в систему, создаёт локальные архивы для offline-работы.
-```
+```bash
 curl -fsSL -o install-fonts.sh https://raw.githubusercontent.com/lincooln/mybash-tools/main/tools/install-fonts.sh && chmod +x install-fonts.sh && sudo ./install-fonts.sh
 ```
 install-syncthingtray.sh — установка SyncthingTray на ALT Linux и производные с поддержкой резервных URL и проверкой зависимостей.
-```
+```bash
 curl -fsSL -o install-syncthingtray.sh https://raw.githubusercontent.com/lincooln/mybash-tools/main/tools/install-syncthingtray.sh && chmod +x install-syncthingtray.sh && sudo ./install-syncthingtray.sh
 ```
 smb-share.sh  - установка samba и расшаривание директории одним скриптом. Все необходимые настройки в начале скрипта можно изменить перед запуском, в том числе и вернуть всё обратно.
-```
+```bash
 curl -fsSL -o smb-share.sh https://raw.githubusercontent.com/lincooln/mybash-tools/main/tools/smb-share.sh && chmod +x smb-share.sh && sudo ./smb-share.sh
 ```
 📚 Базы данных (data/) нужна для хранения данных таким модулям как help и nerdicons без этих данных модули создадут пустую базу.
@@ -118,11 +119,11 @@ nerd-fonts.txt — база иконок Nerd Fonts. вызывается из �
 git clone https://github.com/lincooln/mybash-tools ~/mybash-tools && ~/mybash-tools/install.sh
 ```
 Если Git недоступен:
-```
+```bash
 curl -L https://github.com/lincooln/mybash-tools/archive/refs/heads/main.tar.gz | tar xz -C ~ && mv ~/mybash-tools-main ~/mybash-tools && ~/mybash-tools/install.sh
 ```
 или
-```
+```bash
 wget -qO- https://github.com/lincooln/mybash-tools/archive/refs/heads/main.tar.gz | tar xz -C ~ && mv ~/mybash-tools-main ~/mybash-tools && ~/mybash-tools/install.sh
 ```
 Либо скачайте всё однм архивом при помощи браузера и разархивируйте.
